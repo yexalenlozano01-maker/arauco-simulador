@@ -166,6 +166,10 @@ precios_df, ebit_sin, ebit_con, ahorro = construye_escenario_targets(targets)
 # GRÁFICA
 # ============================
 
+# Reinicia figuras de Matplotlib para evitar que Streamlit se quede con gráficas “atoradas”
+plt.clf()
+plt.close('all')
+
 fig, ax = plt.subplots(figsize=(10, 5))
 
 ax.set_facecolor(FONDO_CLARO)
