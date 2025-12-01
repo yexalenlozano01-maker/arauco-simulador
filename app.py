@@ -120,7 +120,7 @@ def construye_escenario_targets(target_prices):
 # INTERFAZ STREAMLIT
 # ============================
 
-st.title("📊 Simulador Interactivo del EBIT de Arauco")
+st.title("Simulador Interactivo del EBIT de Arauco")
 st.markdown(
     "Ajusta los precios finales (M12) y observa cómo cambian el EBIT **con** y **sin** coberturas."
 )
@@ -215,7 +215,7 @@ st.pyplot(fig, clear_figure=True)
 
 gap_final = ebit_con[-1] - ebit_sin[-1]
 
-st.subheader("📌 Resumen del escenario")
+st.subheader("Resumen del escenario")
 st.write(f"**EBIT base:** {EBIT_base/1e6:,.1f} M USD")
 st.write(f"**EBIT M12 sin coberturas:** {ebit_sin[-1]/1e6:,.1f} M USD")
 st.write(f"**EBIT M12 con coberturas:** {ebit_con[-1]/1e6:,.1f} M USD")
@@ -225,7 +225,7 @@ st.write(f"**Ahorro (protección) en M12:** +{gap_final/1e6:,.1f} M USD")
 # TABLA DE PRECIOS
 # ============================
 
-st.subheader("📄 Precios utilizados")
+st.subheader("Precios utilizados")
 tabla = pd.DataFrame(
     {
         "Spot (P0)": [P_urea_spot, P_met_spot, P_mad_spot],
