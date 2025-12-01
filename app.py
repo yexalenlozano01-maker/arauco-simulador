@@ -47,10 +47,8 @@ horiz_meses = 12
 meses = np.arange(horiz_meses + 1)
 
 # -----------------------------
-# PRECIOS SPOT Y BE INGRESADOS AQUÍ
+# PRECIOS SPOT Y BE
 # -----------------------------
-
-# PUEDES EDITARLOS LIBREMENTE SI CAMBIA TU EXCEL
 P_urea_spot  = 494.98
 P_met_spot   = 664.69
 P_mad_spot   = 445.10
@@ -67,7 +65,7 @@ VS_madera_anual  = 858_115_026.19
 # R² MODELOS
 R2_urea = 0.7007
 R2_metanol = 0.5487
-R2_madera  = 0.62   # Puedes ajustar si cambió el modelo
+R2_madera  = 0.62
 
 base_commodities = {
     "UREA": {
@@ -123,35 +121,37 @@ def construye_escenario_targets(target_prices):
 # ============================
 
 st.title("📊 Simulador Interactivo del EBIT de Arauco")
-st.markdown("Ajusta los precios finales (M12) y observa cómo cambian el EBIT **con** y **sin** coberturas.")
+st.markdown(
+    "Ajusta los precios finales (M12) y observa cómo cambian el EBIT **con** y **sin** coberturas."
+)
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
     P_urea_M12 = st.slider(
         "Precio UREA en M12 (USD/ton)",
-        min_value=float(P_urea_spot*0.5),
-        max_value=float(P_urea_spot*2.0),
+        min_value=float(P_urea_spot * 0.5),
+        max_value=float(P_urea_spot * 2.0),
         value=float(P_urea_BE),
-        step=1.0
+        step=1.0,
     )
 
 with col2:
     P_met_M12 = st.slider(
         "Precio METANOL en M12 (USD/ton)",
-        min_value=float(P_met_spot*0.5),
-        max_value=float(P_met_spot*2.0),
+        min_value=float(P_met_spot * 0.5),
+        max_value=float(P_met_spot * 2.0),
         value=float(P_met_BE),
-        step=1.0
+        step=1.0,
     )
 
 with col3:
     P_mad_M12 = st.slider(
         "Precio MADERA en M12 (USD/m3)",
-        min_value=float(P_mad_spot*0.7),
-        max_value=float(P_mad_spot*2.0),
+        min_value=float(P_mad_spot * 0.7),
+        max_value=float(P_mad_spot * 2.0),
         value=float(P_mad_BE),
-        step=1.0
+        step=1.0,
     )
 
 targets = {
@@ -166,23 +166,35 @@ precios_df, ebit_sin, ebit_con, ahorro = construye_escenario_targets(targets)
 # GRÁFICA
 # ============================
 
-# Reinicia figuras de Matplotlib para evitar que Streamlit se quede con gráficas “atoradas”
-plt.clf()
-plt.close('all')
-
 fig, ax = plt.subplots(figsize=(10, 5))
-
 ax.set_facecolor(FONDO_CLARO)
 
 ax.fill_between(
-    meses, ebit_sin, ebit_con,
+    meses,
+    ebit_sin,
+    ebit_con,
     where=ebit_sin > ebit_con,
-    color=BANDA_CAFE, alpha=0.5,
-    label="EBIT protegido por coberturas"
+    color=BANDA_CAFE,
+    alpha=0.5,
+    label="EBIT protegido por coberturas",
 )
 
-ax.plot(meses, ebit_sin, marker="o", color=CAFE_OSCURO, label="Sin coberturas", linewidth=1.5)
-ax.plot(meses, ebit_con, marker="o", color=CAFE_CLARO, label="Con coberturas", linewidth=2.0)
+ax.plot(
+    meses,
+    ebit_sin,
+    marker="o",
+    color=CAFE_OSCURO,
+    label="Sin coberturas",
+    linewidth=1.5,
+)
+ax.plot(
+    meses,
+    ebit_con,
+    marker="o",
+    color=CAFE_CLARO,
+    label="Con coberturas",
+    linewidth=2.0,
+)
 
 ax.set_xticks(meses)
 ax.set_xticklabels([f"M{m}" for m in meses])
@@ -194,7 +206,8 @@ ax.grid(alpha=0.3)
 ax.set_title("Evolución del EBIT con precios finales seleccionados", fontsize=14)
 ax.legend()
 
-st.pyplot(fig)
+# 👇 ESTA LÍNEA ES CLAVE PARA QUE NO SE “CONGELE” LA FIGURA
+st.pyplot(fig, clear_figure=True)
 
 # ============================
 # RESUMEN NUMÉRICO
@@ -213,18 +226,25 @@ st.write(f"**Ahorro (protección) en M12:** +{gap_final/1e6:,.1f} M USD")
 # ============================
 
 st.subheader("📄 Precios utilizados")
-tabla = pd.DataFrame({
-    "Spot (P0)": [P_urea_spot, P_met_spot, P_mad_spot],
-    "Precio M12": [P_urea_M12, P_met_M12, P_mad_M12],
-    "Variación %": [
-        (P_urea_M12/P_urea_spot - 1)*100,
-        (P_met_M12/P_met_spot - 1)*100,
-        (P_mad_M12/P_mad_spot - 1)*100,
-    ]
-}, index=["UREA", "METANOL", "MADERA"])
+tabla = pd.DataFrame(
+    {
+        "Spot (P0)": [P_urea_spot, P_met_spot, P_mad_spot],
+        "Precio M12": [P_urea_M12, P_met_M12, P_mad_M12],
+        "Variación %": [
+            (P_urea_M12 / P_urea_spot - 1) * 100,
+            (P_met_M12 / P_met_spot - 1) * 100,
+            (P_mad_M12 / P_mad_spot - 1) * 100,
+        ],
+    },
+    index=["UREA", "METANOL", "MADERA"],
+)
 
-st.dataframe(tabla.style.format({
-    "Spot (P0)": "{:,.2f}",
-    "Precio M12": "{:,.2f}",
-    "Variación %": "{:,.2f} %",
-}))
+st.dataframe(
+    tabla.style.format(
+        {
+            "Spot (P0)": "{:,.2f}",
+            "Precio M12": "{:,.2f}",
+            "Variación %": "{:,.2f} %",
+        }
+    )
+)
